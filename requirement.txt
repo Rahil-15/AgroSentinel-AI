@@ -1,8 +1,0 @@
-tensorflow==2.15
-fastapi
-streamlit
-flwr
-pillow
-numpy
-pandas
-
