@@ -3,26 +3,6 @@ preprocess.py — AgroSentinel AI
 ================================
 Loads images from your pre-split Train/ Val/ Test/ folder structure.
 
-Folder structure expected:
-    <project root>/
-        models/
-            data/
-                Corn (Maize)/
-                    Train/
-                        Cercospora Leaf Spot/
-                        Common Rust_/
-                        Healthy/
-                        Northern Leaf Blight/
-                    Val/  (same subfolders)
-                    Test/ (same subfolders)
-                Potato/
-                    Train/ Val/ Test/
-                        Early Blight/ Healthy/ Late Blight/
-                Tomato/
-                    Train/ Val/ Test/
-                        Bacterial Spot/ Early Blight/ Healthy/
-                        Late Blight/ Septoria Leaf Spot/
-                        Yellow Leaf Curl Virus/ ...
 
 Run this file directly to verify your dataset:
     cd "R:\\Major project\\AgroSentinel AI\\models"
