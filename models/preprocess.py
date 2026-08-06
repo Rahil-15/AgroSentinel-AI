@@ -3,7 +3,6 @@ preprocess.py — AgroSentinel AI
 ================================
 Loads images from your pre-split Train/ Val/ Test/ folder structure.
 
-
 Run this file directly to verify your dataset:
     cd "R:\\Major project\\AgroSentinel AI\\models"
     python preprocess.py
