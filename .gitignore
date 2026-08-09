@@ -1,56 +1,56 @@
 # ── Dataset — NEVER push (GBs of images) ─────────────────────────────────────
 models/data/
 data/
- 
+
 # ── Trained model files — share via Google Drive instead ─────────────────────
 *.h5
 *.pt
 *.pth
 *.onnx
 *.tflite
- 
+
 # ── Database files ────────────────────────────────────────────────────────────
 *.db
 *.sqlite
 *.sqlite3
- 
+
 # ── Python cache ──────────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *.pyo
 .Python
- 
+
 # ── Jupyter checkpoints ───────────────────────────────────────────────────────
 .ipynb_checkpoints/
 *.ipynb_checkpoints
- 
+
 # ── Virtual environments ──────────────────────────────────────────────────────
 venv/
 env/
 .env/
 .venv/
- 
+
 # ── Environment variables (API keys etc — never push) ────────────────────────
 .env
 .env.local
 .env.production
- 
+
 # ── VS Code ───────────────────────────────────────────────────────────────────
 .vscode/
 *.code-workspace
- 
+
 # ── OS files ──────────────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
 desktop.ini
- 
+
 # ── Logs and outputs ─────────────────────────────────────────────────────────
 logs/
 *.log
 evaluation_report.txt
 confusion_matrix.png
 class_distribution.png
- 
+
 # ── pip ───────────────────────────────────────────────────────────────────────
 pip-log.txt
-pip-delete-this-directory.txt
+pip-delete-this-directory.txt 

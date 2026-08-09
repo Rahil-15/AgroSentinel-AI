@@ -6,10 +6,13 @@
   "4": "Potato__Early Blight",
   "5": "Potato__Healthy",
   "6": "Potato__Late Blight",
-  "7": "Tomato__Bacterial Spot",
-  "8": "Tomato__Early Blight",
-  "9": "Tomato__Healthy",
-  "10": "Tomato__Late Blight",
-  "11": "Tomato__Septoria Leaf Spot",
-  "12": "Tomato__Yellow Leaf Curl Virus"
+  "7": "Rice__Bacterialblight",
+  "8": "Rice__Brownspot",
+  "9": "Rice__Leafsmut",
+  "10": "Tomato__Bacterial Spot",
+  "11": "Tomato__Early Blight",
+  "12": "Tomato__Healthy",
+  "13": "Tomato__Late Blight",
+  "14": "Tomato__Septoria Leaf Spot",
+  "15": "Tomato__Yellow Leaf Curl Virus"
 }
