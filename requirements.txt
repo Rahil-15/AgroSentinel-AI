@@ -1,6 +1,3 @@
-# AgroSentinel AI — Root requirements
-# Install with: pip install -r requirements.txt
-
 # RECOMMENDED: use conda for numpy/pillow/sklearn first:
 #   conda install numpy pillow scikit-learn matplotlib jupyter -y
 # Then:
@@ -31,3 +28,6 @@ flwr
 # Utilities
 requests
 python-dotenv
+
+#openCV
+opencv-python
