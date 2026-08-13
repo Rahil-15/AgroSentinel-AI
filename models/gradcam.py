@@ -1,12 +1,4 @@
-"""
-gradcam.py  —  AgroSentinel AI  Explainability Agent
-==============================================================
 
-
-Imported by Poorvita's main.py:
-    from gradcam import generate_gradcam
-    heatmap_b64 = generate_gradcam(image_bytes)
-"""
 
 import os
 import sys
@@ -53,24 +45,15 @@ def _open_image(image_input) -> Image.Image:
 
 
 def _apply_colormap(heatmap_2d: np.ndarray) -> np.ndarray:
-    """
-    Apply jet colormap to a 2D heatmap array (values 0-1).
-    Returns an RGB numpy array (H, W, 3) with values 0-255.
-    Works with all matplotlib versions — uses plt.get_cmap instead of cm.get_cmap.
-    """
+    
     cmap       = plt.get_cmap("jet")
-    heatmap_rgb = cmap(heatmap_2d)          # returns (H, W, 4) RGBA float
-    heatmap_rgb = (heatmap_rgb[:, :, :3] * 255).astype(np.uint8)  # drop alpha
+    heatmap_rgb = cmap(heatmap_2d)          
+    heatmap_rgb = (heatmap_rgb[:, :, :3] * 255).astype(np.uint8)  
     return heatmap_rgb
 
 
 def _compute_gradcam(img_array: np.ndarray, class_idx: int) -> np.ndarray:
-    """
-    Input-gradient saliency map.
-    Watches the input tensor and computes gradients of the class score
-    with respect to each input pixel. Highlights pixels that most
-    influenced the prediction. Works with any Keras version.
-    """
+    
     model, _ = _load()
     img_var  = tf.Variable(img_array, dtype=tf.float32)
 
@@ -79,21 +62,19 @@ def _compute_gradcam(img_array: np.ndarray, class_idx: int) -> np.ndarray:
         preds      = model(img_var, training=False)
         class_score = preds[:, class_idx]
 
-    grads = tape.gradient(class_score, img_var)   # (1, 224, 224, 3)
+    grads = tape.gradient(class_score, img_var)   
 
     if grads is None:
         print("     Gradients are None — returning uniform heatmap")
         return np.ones(IMG_SIZE, dtype=np.float32) * 0.5
 
-    # Average absolute gradients across RGB channels → (224, 224)
     saliency = tf.reduce_mean(tf.abs(grads[0]), axis=-1).numpy()
 
-    # Normalise to [0, 1]
     saliency -= saliency.min()
     if saliency.max() > 0:
         saliency /= saliency.max()
 
-    return saliency   # (224, 224)
+    return saliency  
 
 
 def _overlay_heatmap(
@@ -104,16 +85,15 @@ def _overlay_heatmap(
     """Blend jet-coloured heatmap onto original leaf image."""
     img_w, img_h = original_img.size
 
-    # Resize heatmap to match original image
     heatmap_pil  = Image.fromarray(np.uint8(heatmap * 255))
     heatmap_pil  = heatmap_pil.resize((img_w, img_h), Image.LANCZOS)
-    heatmap_norm = np.array(heatmap_pil) / 255.0   # (H, W) float
+    heatmap_norm = np.array(heatmap_pil) / 255.0   
 
-    # Apply jet colormap
-    heatmap_rgb  = _apply_colormap(heatmap_norm)    # (H, W, 3) uint8
+  
+    heatmap_rgb  = _apply_colormap(heatmap_norm)   
     heatmap_img  = Image.fromarray(heatmap_rgb).convert("RGB")
 
-    # Blend with original
+   
     return Image.blend(original_img.convert("RGB"), heatmap_img, alpha=alpha)
 
 
@@ -132,11 +112,9 @@ def generate_gradcam(image_input, save_path: str = None) -> str:
     original_img  = _open_image(image_input)
     img_array     = _preprocess(original_img)
 
-    # Predict class
     preds      = model(tf.constant(img_array, dtype=tf.float32), training=False)
     class_idx  = int(tf.argmax(preds[0]))
 
-    # Compute heatmap and overlay
     heatmap = _compute_gradcam(img_array, class_idx)
     overlay = _overlay_heatmap(original_img, heatmap)
 
