@@ -1,8 +1,6 @@
 """
 predict_single.py
 
-Used by FastAPI /predict endpoint.
-
 CLI test:
     python predict_single.py path/to/leaf.jpg
 
@@ -46,37 +44,14 @@ def load_model_once():
 
 
 def _preprocess(img: Image.Image) -> np.ndarray:
-    """
-    Resize to 224x224 and convert to float32.
-    NO division by 255 — EfficientNetB0 handles normalisation internally.
-    Raw pixel values [0, 255] are passed directly to the model.
-    """
+    
     img = img.convert("RGB").resize(IMG_SIZE, Image.LANCZOS)
-    arr = np.array(img, dtype=np.float32)          # keeps [0, 255] range
-    return np.expand_dims(arr, axis=0)             # shape: (1, 224, 224, 3)
+    arr = np.array(img, dtype=np.float32)          
+    return np.expand_dims(arr, axis=0)            
 
 
 def predict_image(image_input) -> dict:
-    """
-    Run inference on one image.
-
-    Args:
-        image_input : str   — file path
-                    | bytes — raw bytes from multipart upload (FastAPI)
-
-    Returns:
-    {
-        "crop":       "Rice",
-        "disease":    "Brown Spot",
-        "confidence": 0.96,
-        "is_healthy": False,
-        "top3": [
-            {"label": "Rice — Brown Spot",           "confidence": 0.96},
-            {"label": "Rice — Bacterial Leaf Blight", "confidence": 0.03},
-            {"label": "Rice — Leaf Smut",             "confidence": 0.01},
-        ]
-    }
-    """
+    
     model, labels = load_model_once()
 
     if isinstance(image_input, bytes):
@@ -85,14 +60,12 @@ def predict_image(image_input) -> dict:
         img = Image.open(image_input)
 
     arr   = _preprocess(img)
-    preds = model.predict(arr, verbose=0)[0]       # shape: (16,)
+    preds = model.predict(arr, verbose=0)[0]       
 
-    # Top prediction
     top_idx   = int(np.argmax(preds))
     top_conf  = float(preds[top_idx])
-    top_label = labels[str(top_idx)]               # e.g. "Rice__Brownspot"
-
-    # Parse crop + disease from "Crop__Disease" format
+    top_label = labels[str(top_idx)]               
+    
     if "__" in top_label:
         crop_raw, disease = top_label.split("__", 1)
         crop = crop_raw.replace(" (Maize)", "").strip()
@@ -123,7 +96,7 @@ def predict_image(image_input) -> dict:
     }
 
 
-# ── CLI quick test ────────────────────────────────────────────────────────────
+# CLI quick test
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage  : python predict_single.py <path_to_image>")
