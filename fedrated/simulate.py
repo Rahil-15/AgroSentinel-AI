@@ -19,8 +19,7 @@ What you will see:
     - Repeat for NUM_ROUNDS rounds
     - Final global model saved to models/crop_model_federated.h5
 
-Place this file in:
-    R:\Major project\AgroSentinel AI\federated\simulate.py
+    
 """
 
 import os
