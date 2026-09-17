@@ -51,6 +51,17 @@ evaluation_report.txt
 confusion_matrix.png
 class_distribution.png
 
+# ── Flutter build & tools ───────────────────────────────────────────────────
+**/build/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.pub-cache/
+**/.pub/
+.idea/
+*.iml
+.metadata
+
 # ── pip ───────────────────────────────────────────────────────────────────────
 pip-log.txt
-pip-delete-this-directory.txt 
+pip-delete-this-directory.txt
