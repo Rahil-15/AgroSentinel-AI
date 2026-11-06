@@ -16,7 +16,7 @@ from sklearn.metrics import classification_report, confusion_matrix, ConfusionMa
 from PIL import Image
 
 _HERE       = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH  = os.path.join(_HERE, "crop_model.h5")
+MODEL_PATH  = os.path.join(_HERE, "crop_model_federated.h5")
 LABELS_PATH = os.path.join(_HERE, "labels.json")
 DATA_DIR    = os.path.join(_HERE, "data")
 IMG_SIZE    = (224, 224)
