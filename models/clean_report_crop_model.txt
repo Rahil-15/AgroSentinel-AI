@@ -1,0 +1,37 @@
+Model: crop_model.h5
+
+Files found (recursive scan):
+  Corn (Maize)  train   7316 | val  1645 | test  188
+  Potato        train   5702 | val  1282 | test  144
+  Rice          train   3277 | val   702 | test  705
+  Tomato        train  11108 | val  2495 | test  280
+  TEST total: 1317
+
+Test images with a sibling in Train/Val : 356 of 1317 (27.0%)
+    Corn (Maize) : 164 of 188
+    Potato       : 109 of 144
+    Rice         : 0 of 705
+    Tomato       : 83 of 280
+Val images with a sibling in Train      : 2894 of 6124 (47.3%)
+
+ALL test images
+  Overall      :  88.61%  (1317 images)
+  Corn (Maize) :  94.68%  (188 images)
+  Potato       :  88.89%  (144 images)
+  Rice         :  95.04%  (705 images)
+  Tomato       :  68.21%  (280 images)
+
+CLEAN subset (no detected sibling in Train/Val)
+  Overall      :  91.26%  (961 images)
+  Corn (Maize) : 100.00%  (24 images)
+  Potato       :  97.14%  (35 images)
+  Rice         :  95.04%  (705 images)
+  Tomato       :  75.63%  (197 images)
+
+LEAKED subset (has a sibling in Train/Val)
+  Overall      :  81.46%  (356 images)
+  Corn (Maize) :  93.90%  (164 images)
+  Potato       :  86.24%  (109 images)
+  Tomato       :  50.60%  (83 images)
+
+Saved: confusion_matrix_clean_crop_model.png
