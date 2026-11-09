@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgroSentinel AI — Autonomous Crop Pathology & Neural Surveillance</title>
+  <meta name="description" content="Next-generation autonomous crop pathology, thermal Grad-CAM analysis, and federated regional outbreak telemetry for farmers.">
+  
+  <!-- Google Fonts: Figtree & IBM Plex Mono & Fraunces -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+      --healthy: #2F7A4D;
+      --healthy-glow: rgba(47, 122, 77, 0.6);
+      --amber: #C97A2B;
+      --amber-glow: rgba(201, 122, 43, 0.6);
+      --disease: #B23A2E;
+      --fl-indigo: #4B3F8C;
+      --fl-glow: rgba(75, 63, 140, 0.6);
+      --bg: #0A0F0D;
+      --ink: #FFFFFF;
+      --ink-soft: #8D9B91;
+      --line: rgba(222, 220, 203, 0.15);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--ink);
+      font-family: 'Figtree', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Background Videos & Canvases ────────────────────────── */
+    .bg-media-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .bg-media {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1200ms ease-in-out, transform 2000ms var(--ease-spring);
+      transform: scale(1.04);
+    }
+
+    .bg-media.active {
+      opacity: 1;
+      transform: scale(1.0);
+    }
+
+    .bg-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(10, 15, 13, 0.3) 0%, rgba(10, 15, 13, 0.85) 100%);
+      z-index: 1;
+    }
+
+    .grid-lines {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(47, 122, 77, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(47, 122, 77, 0.05) 1px, transparent 1px);
+      background-size: 60px 60px;
+      z-index: 1;
+      opacity: 0.7;
+    }
+
+    /* ── Keyframe Animations ─────────────────────────────────── */
+    @keyframes videoFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes revealUp {
+      from {
+        opacity: 0;
+        transform: translateY(80px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes revealRight {
+      from {
+        opacity: 0;
+        transform: translateX(100px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes dotPulse {
+      0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.45;
+        transform: scale(1.45);
+      }
+    }
+
+    @keyframes scanLine {
+      0% { top: 0%; opacity: 0.8; }
+      50% { opacity: 1; }
+      100% { top: 100%; opacity: 0.2; }
+    }
+
+    /* ── Navbar ──────────────────────────────────────────────── */
+    header.nav-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      padding: 36px 24px;
+      display: flex;
+      justify-content: center;
+      transition: all 400ms var(--ease-spring);
+    }
+
+    .nav-container {
+      width: 100%;
+      max-width: 1340px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: -0.3px;
+    }
+
+    .brand-logo .logo-badge {
+      width: 28px;
+      height: 28px;
+      background: var(--healthy);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-link-item {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 6px;
+      text-decoration: none;
+      color: #fff;
+      position: relative;
+      padding-bottom: 4px;
+    }
+
+    .nav-link-item .idx {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      line-height: 12px;
+      letter-spacing: -0.08px;
+      font-weight: 500;
+      text-transform: uppercase;
+      color: var(--healthy);
+    }
+
+    .nav-link-item .label {
+      font-size: 12px;
+      line-height: 16px;
+      letter-spacing: -0.12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    /* Underline slides in from right on hover */
+    .nav-link-item::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 100%;
+      height: 1px;
+      background: var(--healthy);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 400ms var(--ease-spring);
+    }
+
+    .nav-link-item:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink-soft);
+    }
+
+    .live-clock-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      color: #fff;
+    }
+
+    .live-clock-badge .live-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--healthy);
+      border-radius: 50%;
+      animation: dotPulse 1.6s infinite ease-in-out;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--line);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* ── Hero Section ────────────────────────────────────────── */
+    main.hero-container {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      max-width: 1340px;
+      margin: 0 auto;
+      padding: 180px 24px 60px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 120px;
+    }
+
+    /* Upper Section: Mode Switcher + Pulsing Status */
+    .hero-upper {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 40px;
+    }
+
+    .video-switcher {
+      flex: 4;
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+
+    .role-link {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      opacity: 0.55;
+      transition: opacity 300ms ease, transform 350ms var(--ease-spring), color 300ms ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 0;
+    }
+
+    .role-link:hover {
+      opacity: 0.85;
+      transform: translateX(4px);
+    }
+
+    .role-link.active {
+      opacity: 1.0;
+      color: #fff;
+    }
+
+    .role-link.active::before {
+      content: '>';
+      color: var(--accent, var(--healthy));
+      font-weight: 700;
+    }
+
+    .status-availability {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent, var(--healthy));
+      box-shadow: 0 0 12px var(--accent-glow, var(--healthy-glow));
+      animation: dotPulse 1.6s infinite ease-in-out;
+    }
+
+    /* Lower Section: Giant Title + Purpose & CTA */
+    .hero-lower {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 40px;
+      padding-bottom: 20px;
+    }
+
+    .hero-title-col {
+      flex: 2;
+      animation: revealUp 0.9s var(--ease-spring) forwards;
+    }
+
+    .hero-title {
+      font-family: 'Figtree', sans-serif;
+      font-size: clamp(68px, 13vw, 190px);
+      line-height: 84%;
+      letter-spacing: -0.04em;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #FFFFFF;
+      user-select: none;
+    }
+
+    .hero-title .accent-dot {
+      color: var(--accent, var(--healthy));
+      transition: color 400ms ease;
+    }
+
+    .hero-cta-col {
+      flex: 1;
+      padding-left: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      animation: revealRight 0.9s var(--ease-spring) 0.08s forwards;
+    }
+
+    .hero-description {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--ink-soft);
+      font-weight: 500;
+      max-width: 440px;
+    }
+
+    .hero-description strong {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .cta-button-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* Fill-up Hover Effect Button */
+    .btn-fill-up {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px 32px;
+      border: 1px solid var(--accent, var(--healthy));
+      border-radius: 40px;
+      background: transparent;
+      color: #FFFFFF;
+      font-family: 'Figtree', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-decoration: none;
+      text-transform: lowercase;
+      cursor: pointer;
+      overflow: hidden;
+      transition: color 400ms var(--ease-spring), border-color 400ms var(--ease-spring);
+      z-index: 1;
+    }
+
+    .btn-fill-up::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--accent, var(--healthy));
+      transform: translateY(101%);
+      transition: transform 420ms var(--ease-spring);
+      z-index: -1;
+    }
+
+    .btn-fill-up:hover {
+      color: #0A0F0D;
+      border-color: var(--accent, var(--healthy));
+    }
+
+    .btn-fill-up:hover::before {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #fff;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      text-decoration: none;
+      opacity: 0.7;
+      transition: opacity 300ms ease;
+    }
+
+    .btn-secondary:hover {
+      opacity: 1;
+    }
+
+    /* ── App Modal / Drawer Overlay ──────────────────────────── */
+    .app-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(16px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 400ms var(--ease-spring);
+      padding: 20px;
+    }
+
+    .app-modal-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .app-modal-window {
+      width: 100%;
+      max-width: 440px;
+      height: 90vh;
+      max-height: 880px;
+      background: #16281E;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 28px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 40px var(--healthy-glow);
+      transform: scale(0.92) translateY(30px);
+      transition: transform 450ms var(--ease-spring);
+    }
+
+    .app-modal-overlay.active .app-modal-window {
+      transform: scale(1.0) translateY(0);
+    }
+
+    .app-modal-header {
+      padding: 16px 20px;
+      background: #16281E;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .app-modal-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .app-modal-close {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 200ms ease;
+    }
+
+    .app-modal-close:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .app-iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: #F6F7F1;
+    }
+
+    /* ── Responsive Tablet (810px-1199px) ────────────────────── */
+    @media (min-width: 810px) and (max-width: 1199.98px) {
+      header.nav-header {
+        padding: 30px 18px;
+      }
+      .nav-links {
+        gap: 16px;
+      }
+      main.hero-container {
+        padding: 160px 18px 52px 18px;
+        gap: 80px;
+      }
+      .hero-title {
+        font-size: clamp(80px, 12vw, 130px);
+      }
+      .hero-cta-col {
+        padding-left: 24px;
+        gap: 20px;
+      }
+    }
+
+    /* ── Responsive Mobile (<810px) ──────────────────────────── */
+    @media (max-width: 809.98px) {
+      header.nav-header {
+        padding: 24px 18px;
+      }
+      .nav-links, .nav-right {
+        display: none;
+      }
+      .mobile-menu-btn {
+        display: block;
+      }
+      main.hero-container {
+        padding: 130px 18px 44px 18px;
+        gap: 56px;
+        justify-content: flex-end;
+      }
+      .hero-upper {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 28px;
+      }
+      .hero-lower {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 32px;
+        padding-bottom: 20px;
+      }
+      .hero-cta-col {
+        padding-left: 0;
+        gap: 20px;
+      }
+      .hero-title {
+        font-size: clamp(54px, 18vw, 84px);
+        line-height: 92%;
+      }
+    }
+
+    /* ── Accessibility ───────────────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Video & Visual Layer -->
+  <div class="bg-media-container" aria-hidden="true">
+    <!-- Visual 01: Field Surveillance -->
+    <img id="media-0" class="bg-media active" src="assets/images/hero_3d_scan.jpg" alt="Agricultural Field Scan">
+    <!-- Visual 02: Drone Multispectral -->
+    <img id="media-1" class="bg-media" src="assets/images/radar_3d_alert.jpg" alt="Multispectral Drone Mesh">
+    <!-- Visual 03: Thermal Grad-CAM Pathology -->
+    <img id="media-2" class="bg-media" src="assets/images/leaf_3d_disease.jpg" alt="Thermal Grad-CAM Pathology">
+    
+    <div class="bg-overlay"></div>
+    <div class="grid-lines"></div>
+  </div>
+
+  <!-- Top Navigation Header -->
+  <header class="nav-header">
+    <div class="nav-container">
+      <div class="nav-left">
+        <a href="#" class="brand-logo">
+          <div class="logo-badge">🌱</div>
+          <span>AGROSENTINEL</span>
+        </a>
+        <nav aria-label="Main Navigation">
+          <ul class="nav-links">
+            <li>
+              <a href="#" class="nav-link-item" onclick="openAppModal(); return false;">
+                <span class="idx">01 /</span>
+                <span class="label">Diagnostics</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="nav-link-item" onclick="switchVisual(1); return false;">
+                <span class="idx">02 /</span>
+                <span class="label">Radar Mesh</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="nav-link-item" onclick="switchVisual(2); return false;">
+                <span class="idx">03 /</span>
+                <span class="label">Grad-CAM Thermal</span>
+              </a>
+            </li>
+            <li>
+              <a href="index.html" class="nav-link-item">
+                <span class="idx">04 /</span>
+                <span class="label">Mobile App</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="nav-right">
+        <span>DEV: POORVITA</span>
+        <div class="live-clock-badge">
+          <div class="live-dot"></div>
+          <span id="telemetry-clock">GPS 12.97°N • 00:00:00</span>
+        </div>
+      </div>
+
+      <button class="mobile-menu-btn" onclick="openAppModal()">Launch Scanner</button>
+    </div>
+  </header>
+
+  <!-- Hero Main Section -->
+  <main class="hero-container">
+    
+    <!-- Section 1: Visual Switcher + Availability Status -->
+    <section class="hero-upper" aria-label="Surveillance Modes">
+      <div class="video-switcher">
+        <button class="role-link active" onclick="switchVisual(0)">
+          01 / FIELD SCAN
+        </button>
+        <button class="role-link" onclick="switchVisual(1)">
+          02 / RADAR MESH
+        </button>
+        <button class="role-link" onclick="switchVisual(2)">
+          03 / THERMAL GRAD-CAM
+        </button>
+      </div>
+
+      <div class="status-availability" aria-label="System Status">
+        <div class="status-dot"></div>
+        <span id="status-text">AI SENTINEL ONLINE • 99.4% PRECISION</span>
+      </div>
+    </section>
+
+    <!-- Section 2: Name + Purpose & CTA -->
+    <section class="hero-lower" aria-label="Hero Introduction">
+      <div class="hero-title-col">
+        <h1 class="hero-title">
+          Agro<br>Sentinel<span class="accent-dot">.</span>
+        </h1>
+      </div>
+
+      <div class="hero-cta-col">
+        <p class="hero-description">
+          Next-generation autonomous crop pathology, thermal Grad-CAM leaf diagnostics, and federated regional outbreak surveillance designed for resilient farming.
+        </p>
+
+        <div class="cta-button-wrapper">
+          <button class="btn-fill-up" onclick="openAppModal()">
+            <span>launch leaf scanner</span>
+            <span>&rarr;</span>
+          </button>
+          <a href="index.html" class="btn-secondary">
+            <span>[ open full app ]</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Interactive App Modal -->
+  <div class="app-modal-overlay" id="app-modal">
+    <div class="app-modal-window">
+      <div class="app-modal-header">
+        <div class="app-modal-title">
+          <span>🌱</span>
+          <span>AgroSentinel AI Diagnostic Console</span>
+        </div>
+        <button class="app-modal-close" onclick="closeAppModal()">&times;</button>
+      </div>
+      <iframe src="index.html" class="app-iframe" title="AgroSentinel AI Application"></iframe>
+    </div>
+  </div>
+
+  <script>
+    // Live Telemetry Clock (24H IST Format with GPS Coordinates)
+    function updateClock() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('en-GB', { hour12: false });
+      const clockEl = document.getElementById('telemetry-clock');
+      if (clockEl) {
+        clockEl.textContent = `GPS 12.97°N • ${timeStr}`;
+      }
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Mode visual themes
+    const modes = [
+      {
+        accent: '#2F7A4D',
+        accentGlow: 'rgba(47, 122, 77, 0.6)',
+        status: 'AI SENTINEL ONLINE • 99.4% PRECISION'
+      },
+      {
+        accent: '#C97A2B',
+        accentGlow: 'rgba(201, 122, 43, 0.6)',
+        status: 'REGIONAL RADAR ACTIVE • 6 FIELDS MONITORED'
+      },
+      {
+        accent: '#B23A2E',
+        accentGlow: 'rgba(178, 58, 46, 0.6)',
+        status: 'GRAD-CAM THERMAL PATHOLOGY ACTIVE'
+      }
+    ];
+
+    let currentVisualIndex = 0;
+
+    function switchVisual(index) {
+      if (index === currentVisualIndex) return;
+      
+      const prevMedia = document.getElementById(`media-${currentVisualIndex}`);
+      const nextMedia = document.getElementById(`media-${index}`);
+      
+      if (prevMedia && nextMedia) {
+        prevMedia.classList.remove('active');
+        nextMedia.classList.add('active');
+      }
+
+      // Update switcher buttons
+      const buttons = document.querySelectorAll('.role-link');
+      buttons.forEach((btn, i) => {
+        btn.classList.toggle('active', i === index);
+      });
+
+      // Update theme accent colors & status text
+      const mode = modes[index];
+      document.documentElement.style.setProperty('--accent', mode.accent);
+      document.documentElement.style.setProperty('--accent-glow', mode.accentGlow);
+      
+      const statusText = document.getElementById('status-text');
+      if (statusText) {
+        statusText.textContent = mode.status;
+      }
+
+      currentVisualIndex = index;
+    }
+
+    // Modal controls
+    function openAppModal() {
+      const modal = document.getElementById('app-modal');
+      if (modal) modal.classList.add('active');
+    }
+
+    function closeAppModal() {
+      const modal = document.getElementById('app-modal');
+      if (modal) modal.classList.remove('active');
+    }
+
+    // Close modal on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeAppModal();
+    });
+  </script>
+</body>
+</html>
