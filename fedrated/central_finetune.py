@@ -1,16 +1,6 @@
 """
 central_finetune_control.py  -  AgroSentinel AI  (centralised fine-tuning CONTROL)
 =================================================================================
-Question: is the federated model's gain (88.61% -> 93.32% on the test split) due
-to FEDERATION, or just to extra class-balanced fine-tuning?
-
-This script does the same fine-tuning WITHOUT federation:
-  * starts from the same crop_model.h5
-  * uses the SAME image subsets as the 3 federated nodes (it reuses client.py's
-    loader: same seeds, at most 100 images per class)
-  * same optimizer (Adam 1e-4), loss and batch size
-  * same number of passes over the data: 3 rounds x 2 local epochs = 6 epochs
-  * all data pooled in ONE place (no weight averaging, no nodes)
 
 Run from the federated/ folder (next to client.py):
     python central_finetune_control.py
