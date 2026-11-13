@@ -1,10 +1,11 @@
 """
-evaluate_clean.py  -  AgroSentinel AI  (leakage-aware test evaluation)
+evaluate_clean.py  -  AgroSentinel AI  
 ======================================================================
 
 Run from the models/ folder:
-    python evaluate_clean.py                         # crop_model.h5
+    python evaluate_clean.py                         
     python evaluate_clean.py crop_model_federated.h5
+    python evaluate_clean.py crop_model.h5 nearest     
 """
 
 import os
@@ -16,6 +17,7 @@ import numpy as np
 CROPS    = ["Corn (Maize)", "Potato", "Rice", "Tomato"]
 IMG_EXT  = (".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff")
 IMG_SIZE = (224, 224)
+NEAREST  = len(sys.argv) > 2 and sys.argv[2].lower() == "nearest"   # resize method switch
 
 
 def base(fname):
@@ -70,7 +72,7 @@ def predict(model, paths, bs=32):
     for i in range(0, len(paths), bs):
         batch = []
         for p in paths[i:i + bs]:
-            img = Image.open(p).convert("RGB").resize(IMG_SIZE, Image.LANCZOS)
+            img = Image.open(p).convert("RGB").resize(IMG_SIZE, Image.NEAREST if NEAREST else Image.LANCZOS)
             batch.append(np.asarray(img, dtype=np.float32))      # raw 0-255
         out.extend(np.argmax(model.predict(np.stack(batch), verbose=0), axis=1).tolist())
         print(f"   {min(i + bs, len(paths))}/{len(paths)}", end="\r")
@@ -88,6 +90,8 @@ def main():
     here       = os.path.dirname(os.path.abspath(__file__))
     model_file = sys.argv[1] if len(sys.argv) > 1 else "crop_model.h5"
     stem       = os.path.splitext(os.path.basename(model_file))[0]
+    if NEAREST:
+        stem += "_nearest"
     print(f"\nModel evaluated : {model_file}")
 
     with open(os.path.join(here, "labels.json")) as f:
@@ -103,7 +107,7 @@ def main():
 
     test = [r for r in recs if r["split"] == "test" and r["idx"] is not None]
     val  = [r for r in recs if r["split"] == "val"]
-    lines = [f"Model: {model_file}", ""]
+    lines = [f"Model: {model_file}  (resize: {'nearest' if NEAREST else 'lanczos'})", ""]
 
     lines.append("Files found (recursive scan):")
     for c in CROPS:

@@ -1,4 +1,4 @@
-Model: crop_model.h5
+Model: crop_model.h5  (resize: lanczos)
 
 Files found (recursive scan):
   Corn (Maize)  train   7316 | val  1645 | test  188
