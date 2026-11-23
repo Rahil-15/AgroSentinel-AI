@@ -1,5 +1,11 @@
 """
-predict_single.py  —  AgroSentinel AI  
+predict_single.py  —  AgroSentinel AI  (v3 — with OOD rejection)
+=================================================================
+Fixed: Added confidence threshold to reject out-of-distribution
+       inputs (leaves from unsupported crops like Wheat, Mango etc.)
+
+CLI test:
+    python predict_single.py path/to/leaf.jpg
 
 Import in FastAPI:
     from predict_single import load_model_once, predict_image
@@ -57,7 +63,23 @@ def _preprocess(img: Image.Image) -> np.ndarray:
 
 
 def predict_image(image_input) -> dict:
-   
+    """
+    Run inference on one image with OOD rejection.
+
+    Args:
+        image_input : str (file path) OR bytes (FastAPI upload)
+
+    Returns:
+    {
+        "crop":         "Rice" | "Unknown",
+        "disease":      "Brown Spot" | "Unrecognised plant",
+        "confidence":   0.96,
+        "is_healthy":   False,
+        "is_supported": True | False,   ← NEW field
+        "message":      "..." | None,   ← rejection message if unsupported
+        "top3":         [...],
+    }
+    """
     model, labels = load_model_once()
 
     # Load image
@@ -73,6 +95,9 @@ def predict_image(image_input) -> dict:
     top_conf = float(preds[top_idx])
     top_label = labels[str(top_idx)]
 
+    # ── OOD Rejection ─────────────────────────────────────────────────────────
+    # If confidence is below threshold, the model is uncertain →
+    # likely an unsupported crop or a non-leaf image entirely.
     if top_conf < CONFIDENCE_THRESHOLD:
         top_k_idx = np.argsort(preds)[::-1][:TOP_K]
         top3 = [
@@ -98,6 +123,7 @@ def predict_image(image_input) -> dict:
             "top3": top3,
         }
 
+    # ── Supported crop — normal prediction ────────────────────────────────────
     if "__" in top_label:
         crop_raw, disease = top_label.split("__", 1)
         crop = crop_raw.replace(" (Maize)", "").strip()
@@ -106,7 +132,7 @@ def predict_image(image_input) -> dict:
         crop    = parts[0]
         disease = " ".join(parts[1:])
 
-    disease    = disease.replace("_", " ").title()
+    disease    = disease.replace("_", " ").strip().title()
     is_healthy = "healthy" in disease.lower()
 
     top_k_idx = np.argsort(preds)[::-1][:TOP_K]
@@ -129,6 +155,7 @@ def predict_image(image_input) -> dict:
     }
 
 
+# ── CLI ───────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage  : python predict_single.py <path_to_image>")
@@ -152,4 +179,4 @@ if __name__ == "__main__":
         for i, p in enumerate(result["top3"], 1):
             bar = "█" * int(p["confidence"] * 20)
             print(f"    {i}. {p['label']:42s} {p['confidence']*100:5.1f}%  {bar}")
-    print("=" * 55) 
+    print("=" * 55)
