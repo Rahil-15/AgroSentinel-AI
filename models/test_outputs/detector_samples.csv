@@ -1,0 +1,49 @@
+file,expected,predicted,confidence,correct
+data\Corn (Maize)\Test\Cercospora Leaf Spot\9043a294-8d22-405f-add1-7e5bf1606e7a___RS_GLSp 4431 copy 2_new30degFlipLR.jpg,Corn (Maize) / Cercospora Leaf Spot,Corn / Cercospora Leaf Spot,0.9996,True
+data\Corn (Maize)\Test\Cercospora Leaf Spot\a401fce7-28ad-4d2f-bf98-3ef87ae65ba5___RS_GLSp 4614_90deg.JPG,Corn (Maize) / Cercospora Leaf Spot,Corn / Cercospora Leaf Spot,0.8677,True
+data\Corn (Maize)\Test\Cercospora Leaf Spot\ed2d6237-f67a-4a5b-bd44-f122388bcd80___RS_GLSp 4620 copy_270deg.jpg,Corn (Maize) / Cercospora Leaf Spot,Corn / Cercospora Leaf Spot,0.9997,True
+data\Corn (Maize)\Test\Common Rust_\RS_Rust 1989.JPG,Corn (Maize) / Common Rust_,Corn / Common Rust,1.0,True
+data\Corn (Maize)\Test\Common Rust_\RS_Rust 2004.JPG,Corn (Maize) / Common Rust_,Corn / Common Rust,1.0,True
+data\Corn (Maize)\Test\Common Rust_\RS_Rust 2629.JPG,Corn (Maize) / Common Rust_,Corn / Common Rust,0.9582,True
+data\Corn (Maize)\Test\Healthy\e23676bc-f581-4cde-b33d-2960daffc210___R.S_HL 8255 copy 2_flipLR.jpg,Corn (Maize) / Healthy,Corn / Healthy,1.0,True
+data\Corn (Maize)\Test\Healthy\8a08b66c-17a6-4689-a64e-bf22d57cc60a___R.S_HL 8173 copy 2.jpg,Corn (Maize) / Healthy,Corn / Healthy,1.0,True
+data\Corn (Maize)\Test\Healthy\f3c516b2-43df-4646-a8fc-a6fe2a81b305___R.S_HL 8332 copy 2_flipLR.jpg,Corn (Maize) / Healthy,Corn / Healthy,1.0,True
+data\Corn (Maize)\Test\Northern Leaf Blight\f437c2b5-6299-454b-bb73-b09ebb30cbb3___RS_NLB 3664.JPG,Corn (Maize) / Northern Leaf Blight,Corn / Northern Leaf Blight,0.7225,True
+data\Corn (Maize)\Test\Northern Leaf Blight\c820ac4f-54d2-4046-bb70-b53fa649f648___RS_NLB 3680_flipTB.JPG,Corn (Maize) / Northern Leaf Blight,Corn / Northern Leaf Blight,0.9914,True
+data\Corn (Maize)\Test\Northern Leaf Blight\484d5173-c460-4601-8d9b-c02d1cea5bb3___RS_NLB 3880.JPG,Corn (Maize) / Northern Leaf Blight,Corn / Northern Leaf Blight,0.946,True
+data\Potato\Test\Early Blight\b6b036b0-6869-48b8-b861-a6a85d1b2b97___RS_Early.B 6850_flipTB.JPG,Potato / Early Blight,Unknown / Unrecognised plant or leaf,0.5678,False
+data\Potato\Test\Early Blight\c47fa8ac-b2a5-4470-bda6-26dec4000409___RS_Early.B 7395_180deg.JPG,Potato / Early Blight,Unknown / Unrecognised plant or leaf,0.6406,False
+data\Potato\Test\Early Blight\a938ba0c-780a-41e0-b26c-3c6b87047ac6___RS_Early.B 6878_180deg.JPG,Potato / Early Blight,Potato / Early Blight,0.841,True
+data\Potato\Test\Healthy\54f86311-9d76-421b-b401-0b02f6e738a5___RS_HL 4172_new30degFlipLR.JPG,Potato / Healthy,Potato / Healthy,1.0,True
+data\Potato\Test\Healthy\bb04f738-1848-4dda-8834-384a48b335cd___RS_HL 1765_newGRR.JPG,Potato / Healthy,Potato / Healthy,1.0,True
+data\Potato\Test\Healthy\a5050bde-febc-4931-b31d-45c9652df318___RS_HL 5373_180deg.JPG,Potato / Healthy,Potato / Healthy,0.987,True
+data\Potato\Test\Late Blight\71cbb155-74cd-42f9-97ac-abca4a10ad79___RS_LB 4456_180deg.JPG,Potato / Late Blight,Potato / Late Blight,1.0,True
+data\Potato\Test\Late Blight\059c9129-51b7-4d6b-9b57-f22e87568a0a___RS_LB 5118_180deg.JPG,Potato / Late Blight,Potato / Late Blight,1.0,True
+data\Potato\Test\Late Blight\e0460bd7-100c-411f-ae0b-f69bfe360313___RS_LB 5310_flipTB.JPG,Potato / Late Blight,Potato / Late Blight,1.0,True
+data\Rice\Test\Bacterialblight\BACTERIALBLIGHT_166.jpg,Rice / Bacterialblight,Rice / Bacterialblight,0.9612,True
+data\Rice\Test\Bacterialblight\BACTERAILBLIGHT3_073.jpg,Rice / Bacterialblight,Rice / Bacterialblight,1.0,True
+data\Rice\Test\Bacterialblight\BACTERAILBLIGHT4_239.JPG,Rice / Bacterialblight,Rice / Bacterialblight,1.0,True
+data\Rice\Test\Brownspot\BROWNSPOT2_182.jpg,Rice / Brownspot,Rice / Brownspot,0.9954,True
+data\Rice\Test\Brownspot\BROWNSPOT7_124.jpg,Rice / Brownspot,Rice / Brownspot,0.9995,True
+data\Rice\Test\Brownspot\BROWNSPOT7_007.jpg,Rice / Brownspot,Rice / Bacterialblight,0.7986,False
+data\Rice\Test\Leafsmut\BLAST6_080.jpg,Rice / Leafsmut,Rice / Brownspot,0.6517,False
+data\Rice\Test\Leafsmut\BLAST9_101.jpg,Rice / Leafsmut,Rice / Leafsmut,1.0,True
+data\Rice\Test\Leafsmut\BLAST2_052.jpg,Rice / Leafsmut,Rice / Leafsmut,0.9995,True
+data\Tomato\Test\Bacterial Spot\7624a9cd-018d-467a-99f9-2255a27103a4___GCREC_Bact.Sp 3725.JPG,Tomato / Bacterial Spot,Tomato / Bacterial Spot,0.7938,True
+data\Tomato\Test\Bacterial Spot\b64c7a63-777f-4f39-bdb8-92fbdbefbdbd___GCREC_Bact.Sp 3580.JPG,Tomato / Bacterial Spot,Tomato / Bacterial Spot,0.9938,True
+data\Tomato\Test\Bacterial Spot\a75e41ac-5944-4698-876b-1d0716934982___GCREC_Bact.Sp 5970.JPG,Tomato / Bacterial Spot,Unknown / Unrecognised plant or leaf,0.609,False
+data\Tomato\Test\Early Blight\265940d8-b4e9-446f-b977-3cbd9ee4f789___RS_Erly.B 9595_180deg.JPG,Tomato / Early Blight,Unknown / Unrecognised plant or leaf,0.5368,False
+data\Tomato\Test\Early Blight\c6e96373-484c-45da-b043-0a294a59ad2c___RS_Erly.B 7401_180deg.JPG,Tomato / Early Blight,Tomato / Late Blight,0.6675,False
+data\Tomato\Test\Early Blight\f33995ae-6456-476c-b832-4ff4cbaf49f7___RS_Erly.B 7525_flipTB.JPG,Tomato / Early Blight,Unknown / Unrecognised plant or leaf,0.4403,False
+data\Tomato\Test\Healthy\4b8f6f0d-ed84-49ae-a92e-6cf049a42207___RS_HL 9652_flipTB.JPG,Tomato / Healthy,Tomato / Septoria Leaf Spot,0.9763,False
+data\Tomato\Test\Healthy\505465db-407b-4e0a-8110-7479dad5261c___GH_HL Leaf 389.JPG,Tomato / Healthy,Unknown / Unrecognised plant or leaf,0.5877,False
+data\Tomato\Test\Healthy\f6a5a9a3-f9a6-4fad-83c3-2ce3e8618b52___RS_HL 0169.JPG,Tomato / Healthy,Potato / Healthy,0.9563,False
+data\Tomato\Test\Late Blight\bba9c7cc-21d8-43b7-acb2-9c079f810f89___RS_Late.B 6798.JPG,Tomato / Late Blight,Tomato / Late Blight,0.9997,True
+data\Tomato\Test\Late Blight\d63639eb-4a20-4321-b8b6-38de563a1ee6___GHLB_PS Leaf 26.4 Day 13.jpg,Tomato / Late Blight,Tomato / Late Blight,1.0,True
+data\Tomato\Test\Late Blight\e686c35e-fcb4-463b-ad2a-2c1da18135bb___GHLB2 Leaf 9023.JPG,Tomato / Late Blight,Tomato / Late Blight,1.0,True
+data\Tomato\Test\Septoria Leaf Spot\3c128fd7-83d2-4202-b612-7e29f1ac4357___Matt.S_CG 2437.JPG,Tomato / Septoria Leaf Spot,Tomato / Septoria Leaf Spot,1.0,True
+data\Tomato\Test\Septoria Leaf Spot\cdf7e54e-1bc9-4107-a49c-77be805c52be___Matt.S_CG 7730.JPG,Tomato / Septoria Leaf Spot,Tomato / Septoria Leaf Spot,1.0,True
+data\Tomato\Test\Septoria Leaf Spot\ee3205cd-bafb-416b-b560-caef5586b96c___JR_Sept.L.S 2540.JPG,Tomato / Septoria Leaf Spot,Tomato / Septoria Leaf Spot,1.0,True
+data\Tomato\Test\Yellow Leaf Curl Virus\d738da92-7e26-49b7-9cbc-88462a37aa1c___UF.GRC_YLCV_Lab 01707.JPG,Tomato / Yellow Leaf Curl Virus,Tomato / Yellow Leaf Curl Virus,0.9993,True
+data\Tomato\Test\Yellow Leaf Curl Virus\e7793d98-ca6c-4030-8b4a-4bd506cde757___YLCV_NREC 2268.JPG,Tomato / Yellow Leaf Curl Virus,Tomato / Yellow Leaf Curl Virus,0.9837,True
+data\Tomato\Test\Yellow Leaf Curl Virus\e9db85a4-65fb-4625-9c97-1e636a03565f___UF.GRC_YLCV_Lab 02306.JPG,Tomato / Yellow Leaf Curl Virus,Tomato / Yellow Leaf Curl Virus,1.0,True

@@ -1,0 +1,17 @@
+Test ID,Description,Expected,Actual,Status,Note
+M-01,Model and labels load; output size equals number of classes,16 and 16,16 and 16,PASS,
+M-02,Detector on 48 sampled test images (3 per class),>= 80% correct (pipeline sanity check),"77% (Corn (Maize): 12/12, Potato: 7/9, Rice: 7/9, Tomato: 11/18)",FAIL,see test_outputs/detector_samples.csv; full accuracy comes from evaluate_clean.py
+M-03,Prediction has all expected fields,"crop, disease, confidence, is_healthy, top3(3), is_supported","['confidence', 'crop', 'disease', 'is_healthy', 'is_supported', 'message', 'top3']",PASS,
+M-04,Same result from a file path and from raw bytes (the FastAPI path),identical,Cercospora Leaf Spot 0.9996 vs Cercospora Leaf Spot 0.9996,PASS,
+M-05,Prediction time per image after warm-up (CPU),< 5 s,median 0.24 s,PASS,
+M-06,Unsupported-crop leaves are rejected,-,-,SKIP,add photos to test_assets/unsupported/
+M-07-blank_gray,Non-leaf image (blank_gray),(recorded only),Unknown / Unrecognised plant or leaf / conf 0.0891 / supported=False,INFO,shows the limits of the confidence-threshold rejection
+M-07-random_noise,Non-leaf image (random_noise),(recorded only),Unknown / Unrecognised plant or leaf / conf 0.3022 / supported=False,INFO,shows the limits of the confidence-threshold rejection
+S-01,"All-green synthetic leaf -> 0% infected, Early","0%, Early","0.0%, Early",PASS,
+S-02,"Half green / half brown synthetic leaf -> about 50%, Severe","40-60%, Severe","50.0%, Severe",PASS,
+S-03,"All-brown synthetic leaf -> about 100%, Severe",">= 90%, Severe","100.0%, Severe",PASS,
+S-04,Severity label boundaries (15% and 40%),all correct,all correct,PASS,
+S-05,Diseased leaves show a higher infected % than healthy leaves (real images),diseased mean > healthy mean,healthy 19.1% vs diseased 24.8%,PASS,
+S-06,3-panel severity image is produced,PNG saved,test_outputs/severity_sample.png,PASS,
+G-01,Saliency agent returns a decodable PNG (base64),valid image,test_outputs/saliency_sample.png,PASS,
+G-02,Saliency info matches the detector's prediction,same disease,Cercospora Leaf Spot,PASS,
